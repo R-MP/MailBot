@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
+import { sendMail } from "../email/mail.js";
 
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY; // Acessa a variável de ambiente
 
@@ -336,6 +337,15 @@ export function verifyAllMet(listedVariables) { // verificando o roteiro dinamic
     // verifica se todas as variáveis foram definidas
     if (allDefined) {
         requirePrompt = "&rvm4p// todas as variáveis foram definidas!"; // confirmacao
+        sendMail(
+            requiredVariables.userName,
+            requiredVariables.userMail,
+            requiredVariables.userPostal,
+            requiredVariables.petType,
+            requiredVariables.petBreed,
+            requiredVariables.petAge,
+            requiredVariables.petGender
+        );
     }
 
     //console.log(requirePrompt);

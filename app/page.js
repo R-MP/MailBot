@@ -1,10 +1,12 @@
 "use client";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import dynamic from 'next/dynamic';
 import { initializeChat, getAIResponse, sendVariable, verifyAllMet } from "../app/chatbot/chat.js";
 import { getSettings } from "../app/chatbot/settings.js";
 import { getStyle } from "../app/chatbot/style.js";
+import { startMail } from "./email/mail.js";
 
-const ChatBot = lazy(() => import("react-chatbotify"));
+const ChatBot = dynamic(() => import("react-chatbotify"), { ssr: false });
 
 const Chat = () => {
   const id = "my-chatbot-id";
@@ -22,7 +24,7 @@ const Chat = () => {
     loop: {
 			message: async (params) => {
         let guidedMessage = params.userInput + " " + guide;
-        console.log(guidedMessage);
+        //console.log(guidedMessage);
         
         const textResponse = await getAIResponse(chatRef.current, guidedMessage);
         const varList = sendVariable(textResponse);
@@ -40,6 +42,8 @@ const Chat = () => {
 
   useEffect(() => {
     const initialize = async () => {
+      startMail();
+      
       const initializedChat = await initializeChat();
       if (initializedChat) {
           chatRef.current = initializedChat;
@@ -62,9 +66,7 @@ const Chat = () => {
 export default function Home() {
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Chat />
-      </Suspense>
+      <Chat />
     </>
   );
 }
